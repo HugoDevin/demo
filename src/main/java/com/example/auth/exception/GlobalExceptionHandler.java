@@ -23,7 +23,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                                   HttpStatusCode status,
                                                                   WebRequest request) {
         String message = resolveValidationMessage(ex.getBindingResult().getFieldErrors());
-        return plainTextResponse(HttpStatus.BAD_REQUEST, message);
+        return plainTextObjectResponse(HttpStatus.BAD_REQUEST, message);
     }
 
     @ExceptionHandler(EmailAlreadyExistsException.class)
@@ -46,6 +46,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .findFirst()
                 .map(FieldError::getDefaultMessage)
                 .orElse("Invalid request.");
+    }
+
+    private ResponseEntity<Object> plainTextObjectResponse(HttpStatus status, String body) {
+        return ResponseEntity.status(status)
+                .contentType(MediaType.TEXT_PLAIN)
+                .body(body);
     }
 
     private ResponseEntity<String> plainTextResponse(HttpStatus status, String body) {
